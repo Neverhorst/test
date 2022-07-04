@@ -15,14 +15,15 @@ jobs:
        env:
           MY_ENV: ${{ github.event.head_commit.message }}
        run: echo $MY_ENV
-     - name: Debugg
-       id: debugg
-       env:
-          MY_ENV: ${{ github.event.ref }}
-       run: echo $MY_ENV
+     - name: Parse
+       id: parse
+       uses: johngeorgewright/regex-action@v1.1.0
+       with:
+          ref: ${{ github.event.head_commit.message }}
+          regex: (?:hotfix|release)-(?P<version>\d+\.\d+(?:\.\d+)?)$
      - name: Set Tag Output
        id: set-tag
-       run:  echo "::set-output name=tag_name::$(sh get-version.sh)"
+       run:  echo "::set-output name=tag_name::${{ fromJSON(steps.parser.outputs.groups).version }}"
      - name: Create Tag
        uses: actions/github-script@v3
        env:
