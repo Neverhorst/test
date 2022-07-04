@@ -24,7 +24,7 @@ jobs:
      - name: Set Tag Output
        id: set-tag
        env:
-          STUFF: ${{ fromJSON(steps.parser.outputs.groups).version }}
+          STUFF: ${{ steps.parser.outputs.groups }}
        run:  echo $STUFF
      - name: Create Tag
        uses: actions/github-script@v3
