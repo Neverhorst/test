@@ -23,7 +23,9 @@ jobs:
           regex: (?:[\s\S.]*?)(?P<type>hotfix|release)-(?P<version>\d+\.\d+(?:\.\d+)?)$
      - name: Set Tag Output
        id: set-tag
-       run:  echo "::set-output name=tag_name::${{ fromJSON(steps.parser.outputs.groups).version }}"
+       env:
+          STUFF: ${{ fromJSON(steps.parser.outputs.groups).version }}
+       run:  echo $STUFF
      - name: Create Tag
        uses: actions/github-script@v3
        env:
