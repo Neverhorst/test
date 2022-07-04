@@ -1,0 +1,38 @@
+name: Tag and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    if: contains( github.event.head_commit.message, 'release' ) || contains( github.event.head_commit.message, 'hotfix' )
+    steps:
+     - name: Debug
+       id: debug
+       env:
+          MY_ENV: ${{ github.event.head_commit.message }}
+       run: echo $MY_ENV
+     - name: Debugg
+       id: debugg
+       env:
+          MY_ENV: ${{ github.event.ref }}
+       run: echo $MY_ENV
+     - name: Set Tag Output
+       id: set-tag
+       run:  echo "::set-output name=tag_name::$(sh get-version.sh)"
+     - name: Create Tag
+       uses: actions/github-script@v3
+       env:
+          TAG: ${{ steps.set-tag.outputs.tag_name }}
+       with:
+          github-token: ${{ github.token }}
+          script: |
+            github.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+             ref: "refs/tags/${{ steps.set-tag.outputs.tag_name }}",
+              sha: context.sha
+            })
